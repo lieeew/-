@@ -17,7 +17,7 @@ public abstract class AbstractRegisterLoginComponent {
         funcInterface = registerLoginFuncInterface;
     }
 
-    protected final void validate(RegisterLoginFuncInterface registerLoginFuncInterface) {
+    protected final void validate(Object registerLoginFuncInterface) {
         assert registerLoginFuncInterface != null;
         if (!(registerLoginFuncInterface instanceof RegisterLoginFuncInterface)) {
             throw new UnsupportedOperationException("Unknown register/ login function type!");

@@ -35,7 +35,7 @@ public class UserService {
         return "Register success";
     }
 
-    private boolean checkUserExists(String userName) {
+    protected boolean checkUserExists(String userName) {
         UserInfo byUserName = userRepository.findByUserName(userName);
         return byUserName != null;
     }
