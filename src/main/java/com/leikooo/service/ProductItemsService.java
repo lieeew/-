@@ -2,6 +2,8 @@ package com.leikooo.service;
 
 import com.leikooo.items.composite.AbstractProductItem;
 import com.leikooo.items.composite.ProductComposite;
+import com.leikooo.items.visitor.AddItemVisitor;
+import com.leikooo.items.visitor.DelItemVisitor;
 import com.leikooo.pojo.ProductItem;
 import com.leikooo.repo.ProductItemRepository;
 import com.leikooo.util.ProductConstants;
@@ -23,10 +25,18 @@ import java.util.stream.Collectors;
 public class ProductItemsService {
     @Resource
     private RedisCommonProcessor redisCommonProcessor;
+
     @Resource
     private ProductItemRepository productItemRepository;
+
+    @Resource
+    private AddItemVisitor addItemVisitor;
+
+    @Resource
+    private DelItemVisitor delItemVisitor;
+
     public ProductComposite fetchAllItems() {
-        ProductComposite productComposite = (ProductComposite) redisCommonProcessor.get("items");
+        ProductComposite productComposite = (ProductComposite) redisCommonProcessor.get(ProductConstants.PRODUCT_KEY);
         if (productComposite != null) {
             return productComposite;
         }
@@ -47,5 +57,32 @@ public class ProductItemsService {
             item.setChildren(list == null ? new ArrayList<>() : list.stream().map(x -> (AbstractProductItem) x).collect(Collectors.toList()));
         });
         return composites.size() == 0 ? null : composites.get(0);
+    }
+
+    /**
+     * 我们采取的措施是先更新 数据库 之后在更新 redis 的缓存
+     *
+     * @param addProduct 增加的 product
+     */
+    public ProductComposite addItem(ProductItem addProduct) {
+        // 先更新数据库
+        productItemRepository.addItem(addProduct.getName(), addProduct.getPid());
+        ProductComposite updateProduct = addItemVisitor.visitor(ProductComposite.builder().name(addProduct.getName()).pid(addProduct.getPid()).id(addProduct.getId()).build());
+        redisCommonProcessor.set(ProductConstants.PRODUCT_KEY, updateProduct);
+        return updateProduct;
+    }
+
+    /**
+     * 使用访问者模式删除
+     *
+     * @param delItem
+     * @return
+     */
+    public ProductComposite delItem(ProductItem delItem) {
+        // 先更新数据库
+        productItemRepository.delItem(delItem.getId(), delItem.getPid());
+        ProductComposite updateProduct = delItemVisitor.visitor(ProductComposite.builder().name(delItem.getName()).pid(delItem.getPid()).id(delItem.getId()).build());
+        redisCommonProcessor.set(ProductConstants.PRODUCT_KEY, updateProduct);
+        return updateProduct;
     }
 }

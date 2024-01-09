@@ -6,6 +6,7 @@ import com.leikooo.service.ProductItemsService;
 import com.leikooo.util.ProductConstants;
 import com.leikooo.util.RedisCommonProcessor;
 import jakarta.annotation.Resource;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * @data 2024/1/6
  * @description
  */
+@Component
 public class AddItemVisitor implements ItemVisitor<ProductComposite>{
     @Resource
     private RedisCommonProcessor redisCommonProcessor;
