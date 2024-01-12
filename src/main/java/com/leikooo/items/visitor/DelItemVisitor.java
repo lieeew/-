@@ -2,7 +2,7 @@ package com.leikooo.items.visitor;
 
 import com.leikooo.items.composite.AbstractProductItem;
 import com.leikooo.items.composite.ProductComposite;
-import com.leikooo.util.ProductConstants;
+import com.leikooo.constant.ProductConstants;
 import com.leikooo.util.RedisCommonProcessor;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;

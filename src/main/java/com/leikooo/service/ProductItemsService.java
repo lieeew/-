@@ -6,7 +6,7 @@ import com.leikooo.items.visitor.AddItemVisitor;
 import com.leikooo.items.visitor.DelItemVisitor;
 import com.leikooo.pojo.ProductItem;
 import com.leikooo.repo.ProductItemRepository;
-import com.leikooo.util.ProductConstants;
+import com.leikooo.constant.ProductConstants;
 import com.leikooo.util.RedisCommonProcessor;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
