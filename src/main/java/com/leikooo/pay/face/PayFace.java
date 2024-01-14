@@ -1,9 +1,11 @@
 package com.leikooo.pay.face;
 
+import com.leikooo.pay.factory.PayContextFactory;
 import com.leikooo.pay.startegy.AlipayStrategy;
 import com.leikooo.pay.startegy.WechatPayStrategy;
 import com.leikooo.pay.startegy.context.PayContext;
 import com.leikooo.pojo.Order;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,11 +15,10 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PayFace {
+    @Resource
+    private PayContextFactory payContextFactory;
+
     public String pay(Order order, Integer payType) {
-        return switch (payType) {
-            case 1 -> new PayContext(new AlipayStrategy()).execute(order);
-            case 2 -> new PayContext(new WechatPayStrategy()).execute(order);
-            default -> throw new UnsupportedOperationException("不支持 " + payType + " 支付方式");
-        };
+        return payContextFactory.getContext(payType).execute(order);
     }
 }
