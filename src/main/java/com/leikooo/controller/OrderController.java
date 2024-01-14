@@ -7,13 +7,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author <a href="https://github.com/lieeew">leikooo</a>
  * @data 2024/1/12
  * @description
  */
-@Controller
+@RestController
 @RequestMapping("/order")
 public class OrderController {
     @Resource

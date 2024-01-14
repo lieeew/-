@@ -1,5 +1,7 @@
 package com.leikooo.service;
 
+import com.leikooo.ordermanagement.command.OrderCommand;
+import com.leikooo.ordermanagement.command.invoke.OrderCommandInvoker;
 import com.leikooo.ordermanagement.state.OrderState;
 import com.leikooo.ordermanagement.state.OrderStateChangeAction;
 import com.leikooo.pojo.Order;
@@ -30,10 +32,15 @@ public class OrderService {
     @Resource
     private StateMachinePersister<OrderState, OrderStateChangeAction, String> stateMachinePersister;
 
+    @Resource
+    private OrderCommand orderCommand;
+
     public Order createOrder(final String productId) {
         String orderId = "OID" + productId;
         Order order = Order.builder().productId(productId).orderId(orderId).orderState(OrderState.ORDER_WAIT_PAY).build();
         redisCommonProcessor.set(orderId, order, 600);
+        OrderCommandInvoker orderCommandInvoker = new OrderCommandInvoker();
+        orderCommandInvoker.invoke(orderCommand, order);
         return order;
     }
 

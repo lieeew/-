@@ -1,5 +1,8 @@
 package com.leikooo.ordermanagement.listener;
 
+import com.alipay.api.domain.UpdatedAuthenticationDetails;
+import com.leikooo.ordermanagement.command.OrderCommand;
+import com.leikooo.ordermanagement.command.invoke.OrderCommandInvoker;
 import com.leikooo.ordermanagement.state.OrderState;
 import com.leikooo.ordermanagement.state.OrderStateChangeAction;
 import com.leikooo.pojo.Order;
@@ -22,6 +25,9 @@ public class OrderStateListener {
     @Resource
     private RedisCommonProcessor redisCommonProcessor;
 
+    @Resource
+    private OrderCommand orderCommand;
+
     @OnStateChanged(source = "ORDER_WAIT_PAY", target = "ORDER_WAIT_SEND")
     public boolean payToSend(Message<OrderStateChangeAction> message) {
         final Order order = (Order) message.getHeaders().get(StateMachineConstant.MESSAGE_HEADER_KEY);
@@ -31,6 +37,8 @@ public class OrderStateListener {
         }
         final Order updateOrder = Order.builder().orderId(order.getOrderId()).orderState(OrderState.ORDER_WAIT_SEND).price(order.getPrice()).productId(order.getProductId()).build();
         redisCommonProcessor.set(order.getOrderId(), updateOrder, 900);
+        OrderCommandInvoker orderCommandInvoker = new OrderCommandInvoker();
+        orderCommandInvoker.invoke(orderCommand, updateOrder);
         return true;
     }
 
@@ -43,6 +51,8 @@ public class OrderStateListener {
         }
         final Order updateOrder = Order.builder().orderId(order.getOrderId()).orderState(OrderState.ORDER_WAIT_RECEIVE).price(order.getPrice()).productId(order.getProductId()).build();
         redisCommonProcessor.set(order.getOrderId(), updateOrder, 900);
+        OrderCommandInvoker orderCommandInvoker = new OrderCommandInvoker();
+        orderCommandInvoker.invoke(orderCommand, updateOrder);
         return true;
     }
 
@@ -53,8 +63,11 @@ public class OrderStateListener {
         if (order.getOrderState() != OrderState.ORDER_WAIT_RECEIVE) {
             throw new UnsupportedOperationException("order state error !");
         }
-        redisCommonProcessor.remove(order.getOrderId());
-        redisCommonProcessor.remove(order.getOrderId() + "STATE");
+        final Order updateOrder = Order.builder().orderId(order.getOrderId()).orderState(OrderState.ORDER_FINISH).price(order.getPrice()).productId(order.getProductId()).build();
+        redisCommonProcessor.set(order.getOrderId(), updateOrder, 600);
+        redisCommonProcessor.remove(order.getOrderId() + StateMachineConstant.STATEMACHINE_KEY_SUFFIX);
+        OrderCommandInvoker orderCommandInvoker = new OrderCommandInvoker();
+        orderCommandInvoker.invoke(orderCommand, updateOrder);
         return true;
     }
 }
