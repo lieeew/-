@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderCommandReceiver {
 
-    public void action(Order order) {
+    public void action(Order order) throws UnsupportedOperationException {
         assert order != null : "order 不符合规范";
         OrderState orderState = order.getOrderState();
         switch (orderState) {
@@ -30,8 +30,10 @@ public class OrderCommandReceiver {
                 System.out.println("订单 id " + order.getOrderId());
                 System.out.println("存入 DB");
             }
-            default -> throw new UnsupportedOperationException("order state error!");
-
+            case ORDER_FINISH -> {
+                System.out.println("订单 id " + order.getOrderId() + "已完成");
+            }
+            default -> throw new UnsupportedOperationException(String.format("order state is %s error!", orderState));
         }
     }
 }
