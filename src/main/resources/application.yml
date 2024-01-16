@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8101
 spring:
   datasource:
     username: design
@@ -36,3 +36,17 @@ gitee:
   user:
     prefix: ${gitee.state}@
     url: https://gitee.com/api/v5/user?access_token=
+## Apollo 配置
+app:
+  id: DesignPattenLearning
+apollo:
+  meta: http://1.117.228.86:8080
+  bootstrap:
+    eagerLoad:
+      enabled: true
+    enabled: true
+  cache-dir: D:\\service\\apollo-cache
+logging:
+  level:
+    com:
+      info
