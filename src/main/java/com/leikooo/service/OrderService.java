@@ -4,6 +4,7 @@ import com.leikooo.ordermanagement.command.OrderCommand;
 import com.leikooo.ordermanagement.command.invoke.OrderCommandInvoker;
 import com.leikooo.ordermanagement.state.OrderState;
 import com.leikooo.ordermanagement.state.OrderStateChangeAction;
+import com.leikooo.pay.face.PayFace;
 import com.leikooo.pojo.Order;
 import com.leikooo.constant.StateMachineConstant;
 import com.leikooo.util.RedisCommonProcessor;
@@ -34,6 +35,9 @@ public class OrderService {
 
     @Resource
     private OrderCommand orderCommand;
+
+    @Resource
+    private PayFace payFace;
 
     public Order createOrder(final String productId) {
         String orderId = "OID" + productId;
@@ -71,6 +75,11 @@ public class OrderService {
         return order;
     }
 
+    public String payFace(String orderId, Integer payType, Float price) {
+        Order order = (Order) redisCommonProcessor.get(orderId);
+        Order completeOrder = Order.builder().price(price).productId(order.getProductId()).orderState(order.getOrderState()).orderId(orderId).build();
+        return payFace.pay(completeOrder, payType);
+    }
     /**
      * 修改 stateMachine 的订单状态
      *

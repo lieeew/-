@@ -1,7 +1,7 @@
-package com.leikooo.pay.startegy.context;
+package com.leikooo.pay.strategy.context;
 
 import com.leikooo.pay.factory.AbstractPayContext;
-import com.leikooo.pay.startegy.PayStrategyInterface;
+import com.leikooo.pay.strategy.PayStrategyInterface;
 import com.leikooo.pojo.Order;
 
 /**

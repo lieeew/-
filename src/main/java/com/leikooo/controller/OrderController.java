@@ -3,6 +3,7 @@ package com.leikooo.controller;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.leikooo.constant.PayConstants;
+import com.leikooo.pay.face.PayFace;
 import com.leikooo.pojo.Order;
 import com.leikooo.service.OrderService;
 import jakarta.annotation.Resource;
@@ -36,6 +37,12 @@ public class OrderController {
     @PostMapping("/pay")
     public Order payOrder(@RequestParam String orderId) {
         return orderService.payOrder(orderId);
+
+    }
+
+    @PostMapping("/payFace")
+    public String payFace(@RequestParam String orderId, @RequestParam Integer payType, @RequestParam Float price) {
+        return orderService.payFace(orderId, payType, price);
     }
 
     @PostMapping("/send")

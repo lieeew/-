@@ -1,9 +1,6 @@
 package com.leikooo.pay.face;
 
 import com.leikooo.pay.factory.PayContextFactory;
-import com.leikooo.pay.startegy.AlipayStrategy;
-import com.leikooo.pay.startegy.WechatPayStrategy;
-import com.leikooo.pay.startegy.context.PayContext;
 import com.leikooo.pojo.Order;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;

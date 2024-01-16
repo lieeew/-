@@ -1,7 +1,7 @@
 package com.leikooo.pay.factory;
 
-import com.leikooo.pay.startegy.PayStrategyInterface;
-import com.leikooo.pay.startegy.context.PayContext;
+import com.leikooo.pay.strategy.PayStrategyInterface;
+import com.leikooo.pay.strategy.context.PayContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +33,7 @@ public class PayContextFactory extends AbstractPayContextFactory<PayContext> {
                 contexts.put(strategyEnum.name(), context);
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException |
                      InvocationTargetException e) {
-                log.error("factory 创建对象失败" + e.getMessage());
+                log.error("factory 创建对象失败 " + e.getMessage());
             }
         }
         return contexts.get(strategyEnum.name());

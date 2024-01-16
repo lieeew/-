@@ -1,4 +1,4 @@
-package com.leikooo.pay.startegy;
+package com.leikooo.pay.strategy;
 
 import com.leikooo.pojo.Order;
 

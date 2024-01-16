@@ -1,4 +1,4 @@
-package com.leikooo.pay.startegy;
+package com.leikooo.pay.strategy;
 
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
