@@ -3,6 +3,7 @@ package com.leikooo.service;
 import com.leikooo.duty.AbstractBusinessHandler;
 import com.leikooo.duty.CityHandler;
 import com.leikooo.duty.builder.HandlerEnum;
+import com.leikooo.pojo.BusinessLaunch;
 import com.leikooo.pojo.UserInfo;
 import com.leikooo.repo.BusinessLaunchRepository;
 import com.leikooo.repo.UserRepository;
@@ -13,9 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -31,7 +32,7 @@ public class UserService {
     @Resource
     private BusinessLaunchRepository businessLaunchRepository;
 
-    @Value("${duty.chain}")
+//    @Value("${duty.chain}")
     private String handlerType;
 
     // 记录当前 handlerType 的配置
@@ -80,6 +81,7 @@ public class UserService {
                 try {
                     // 创建哑节点
                     AbstractBusinessHandler dummyHeadHandler = new CityHandler();
+                    // 创建前置节点初始为哑节点
                     AbstractBusinessHandler preHandler = dummyHeadHandler;
                     String[] typeList = handlerType.split(",");
                     for (String handlerType : typeList) {
@@ -96,5 +98,10 @@ public class UserService {
                 }
             }
         }
+    }
+
+    public List<BusinessLaunch> filterBusinessLaunch(String sex, String city, String product) {
+        List<BusinessLaunch> businessLaunches = businessLaunchRepository.findAll();
+        return Objects.requireNonNull(buildChain()).processHandler(businessLaunches, city, sex, product);
     }
 }

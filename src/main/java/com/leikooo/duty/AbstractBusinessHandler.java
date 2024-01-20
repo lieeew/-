@@ -1,8 +1,6 @@
 package com.leikooo.duty;
 
 import com.leikooo.pojo.BusinessLaunch;
-import org.bouncycastle.LICENSE;
-
 import java.util.List;
 
 /**
@@ -21,5 +19,6 @@ public abstract class AbstractBusinessHandler {
     public boolean hasNextHandler() {
         return this.nextHandler != null;
     }
+
     public abstract List<BusinessLaunch> processHandler(List<BusinessLaunch> launchList, String targetCity, String targetSex, String targetProduct);
 }

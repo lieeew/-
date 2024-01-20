@@ -20,6 +20,7 @@ public class CityHandler extends AbstractBusinessHandler {
         }
         launchList = launchList.stream().filter(launch -> {
             String city = launch.getTargetCity();
+            // 这里就算没有写城市，也默认是匹配的，因为不可能不给你发广告
             if (StringUtils.isBlank(city)) {
                 return true;
             }

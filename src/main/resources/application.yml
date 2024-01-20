@@ -26,6 +26,11 @@ spring:
     init:
       schema-locations: classpath:schema.sql
       data-locations: classpath:data.sql
+  rabbitmq:
+    host: 1.117.228.86
+    port: 5672
+    username: leikooo
+    password: hsphsphsp
 gitee:
   callBack: http://localhost:8081/bridge/gitee
   clientId: 49828cf7506483f93edcc340fd6e7017a9dbc95713b7c0de6adffa069d594fc7
@@ -37,15 +42,14 @@ gitee:
     prefix: ${gitee.state}@
     url: https://gitee.com/api/v5/user?access_token=
 ## Apollo 配置
-app:
-  id: DesignPattenLearning
-apollo:
-  meta: http://1.117.228.86:8080
-  bootstrap:
-    eagerLoad:
-      enabled: true
-    enabled: true
-  cache-dir: D:\\service\\apollo-cache
+#app:
+#  id: DesignPattenLearning
+#apollo:
+#  meta: http://1.117.228.86:8080
+#  bootstrap:
+#    eagerLoad:
+#      enabled: true
+#    enabled: true
 logging:
   level:
     com:
