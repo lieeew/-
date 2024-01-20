@@ -7,6 +7,7 @@ import com.leikooo.ordermanagement.state.OrderStateChangeAction;
 import com.leikooo.pay.face.PayFace;
 import com.leikooo.pojo.Order;
 import com.leikooo.constant.StateMachineConstant;
+import com.leikooo.service.inner.OrderServiceInterface;
 import com.leikooo.util.RedisCommonProcessor;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
-public class OrderService {
+public class OrderService implements OrderServiceInterface {
     @Resource
     private RedisCommonProcessor redisCommonProcessor;
 
@@ -39,6 +40,7 @@ public class OrderService {
     @Resource
     private PayFace payFace;
 
+    @Override
     public Order createOrder(final String productId) {
         String orderId = "OID" + productId;
         Order order = Order.builder().productId(productId).orderId(orderId).orderState(OrderState.ORDER_WAIT_PAY).build();
@@ -48,6 +50,7 @@ public class OrderService {
         return order;
     }
 
+    @Override
     public Order payOrder(final String orderId) {
         Order order = (Order) redisCommonProcessor.get(orderId);
         Message<OrderStateChangeAction> message = MessageBuilder.withPayload(OrderStateChangeAction.PAY_ORDER).setHeader(StateMachineConstant.MESSAGE_HEADER_KEY, order).build();
@@ -57,6 +60,7 @@ public class OrderService {
         return order;
     }
 
+    @Override
     public Order sendOrder(final String orderId) {
         Order order = (Order) redisCommonProcessor.get(orderId);
         Message<OrderStateChangeAction> message = MessageBuilder.withPayload(OrderStateChangeAction.SEND_ORDER).setHeader(StateMachineConstant.MESSAGE_HEADER_KEY, order).build();
@@ -66,6 +70,7 @@ public class OrderService {
         return order;
     }
 
+    @Override
     public Order receiveOrder(final String orderId) {
         Order order = (Order) redisCommonProcessor.get(orderId);
         Message<OrderStateChangeAction> message = MessageBuilder.withPayload(OrderStateChangeAction.RECEIVE_ORDER).setHeader(StateMachineConstant.MESSAGE_HEADER_KEY, order).build();
@@ -75,11 +80,13 @@ public class OrderService {
         return order;
     }
 
-    public String payFace(String orderId, Integer payType, Float price) {
+    @Override
+    public String getPayUrl(String orderId, Integer payType, Float price) {
         Order order = (Order) redisCommonProcessor.get(orderId);
         Order completeOrder = Order.builder().price(price).productId(order.getProductId()).orderState(order.getOrderState()).orderId(orderId).build();
         return payFace.pay(completeOrder, payType);
     }
+
     /**
      * 修改 stateMachine 的订单状态
      *

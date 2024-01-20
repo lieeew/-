@@ -6,8 +6,11 @@ import com.leikooo.constant.PayConstants;
 import com.leikooo.pay.face.PayFace;
 import com.leikooo.pojo.Order;
 import com.leikooo.service.OrderService;
+import com.leikooo.service.decorator.OrderServiceDecorator;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,11 +26,18 @@ import java.util.Map;
  * @data 2024/1/12
  * @description
  */
+@Slf4j
 @RestController
 @RequestMapping("/order")
 public class OrderController {
+    @Value("${service.level}")
+    private Integer serviceLevel;
+
     @Resource
     private OrderService orderService;
+
+    @Resource
+    private OrderServiceDecorator orderServiceDecorator;
 
     @PostMapping("/creat")
     public Order createOrder(@RequestParam String productId) {
@@ -37,12 +47,11 @@ public class OrderController {
     @PostMapping("/pay")
     public Order payOrder(@RequestParam String orderId) {
         return orderService.payOrder(orderId);
-
     }
 
     @PostMapping("/payFace")
     public String payFace(@RequestParam String orderId, @RequestParam Integer payType, @RequestParam Float price) {
-        return orderService.payFace(orderId, payType, price);
+        return orderService.getPayUrl(orderId, payType, price);
     }
 
     @PostMapping("/send")
@@ -54,6 +63,7 @@ public class OrderController {
     public Order receive(@RequestParam String orderId) {
         return orderService.receiveOrder(orderId);
     }
+
     @RequestMapping("/alipayCallback")
     public String alipayCallback(HttpServletRequest request) throws AlipayApiException, UnsupportedEncodingException, UnsupportedEncodingException {
         // 获取回调信息
@@ -83,7 +93,10 @@ public class OrderController {
         String tradeNo = new String(request.getParameter("trade_no").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
         // 支付金额
         float totalAmount = Float.parseFloat(new String(request.getParameter("total_amount").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));
-//        orderService.pay(outTradeNo);
+        // 支付
+        orderServiceDecorator.setOrderServiceInterface(orderService);
+        Order decoratorPay = orderServiceDecorator.decoratorPay(outTradeNo, serviceLevel, totalAmount);
+        log.info("支付宝流水号: {} , 支付金额: {}, decoratorPay {}", tradeNo, totalAmount, decoratorPay);
         //进行相关的业务操作
         return "支付成功页面跳转, 当前订单为：" + outTradeNo;
     }

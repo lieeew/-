@@ -11,5 +11,5 @@ public class PayConstants {
     public static final String APP_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvs916PqLhjiTtCdXe1Sm8xeJ/IXJf7NmqOmO2bMHh2I2umQgWa0ayP5mzjS71c1MmjWWJmtKU4ZFR/DEudYef3HZgcQA3u4+eaZ48w6f0lvyMYvAzJwE3Pu0lNdj1wiFOFtHp+XeUrqzHBBxGkk4/bnhBUeLJp2GDCg+7hSSBD6CMFP2Dl5n202fyAzdtbiwbfPZ72xYJYMTMTYlf/vdJIn8Ed6K61wNdn4lTmqPpY4lewctbEfW7HGn0KnyXZ6I7pvKzfdhIwz7o4Ch2vYwmEbtJpf1E99ETSMZgYMZJpv9aczG9bNF3oJ+ntFeVlNyhyOkk6PovqDyQx2oP8h+iwIDAQAB";
     public static final String SIGN_TYPE = "RSA2";
     public static final String ALIPAY_GATEWAY = "https://openapi-sandbox.dl.alipaydev.com/gateway.do";
-    public static final String CALLBACK_URL = "http://localhost:8081/order/alipayCallback";
+    public static final String CALLBACK_URL = "http://localhost:8101/order/alipayCallback";
 }
