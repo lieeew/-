@@ -66,7 +66,7 @@ public class OrderServiceDecorator extends AbstractOrderServiceDecorator {
         try {
             this.updateScoreAndSendRedPaper(order.getProductId(), serverLevel, price);
         } catch (Exception e) {
-            // 重试机制，不能影响支付主流程
+            // 重试机制，不能影响支付主流程1
             log.error("更新积分和发送红包失败", e);
         }
         return order;
