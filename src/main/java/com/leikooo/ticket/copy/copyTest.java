@@ -1,4 +1,4 @@
-package com.leikooo.copy;
+package com.leikooo.ticket.copy;
 
 /**
  * @author <a href="https://github.com/lieeew">leikooo</a>

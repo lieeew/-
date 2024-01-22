@@ -1,4 +1,4 @@
-package com.leikooo.dynamicproxy.jdk;
+package com.leikooo.ticket.dynamicproxy.jdk;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

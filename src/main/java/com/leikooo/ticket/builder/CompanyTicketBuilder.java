@@ -1,7 +1,6 @@
 package com.leikooo.ticket.builder;
 
 import com.leikooo.ticket.product.CompanyTicket;
-import jakarta.persistence.Table;
 
 /**
  * @author <a href="https://github.com/lieeew">leikooo</a>

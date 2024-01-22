@@ -12,7 +12,6 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 /**
  * @author <a href="https://github.com/lieeew">leikooo</a>

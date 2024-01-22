@@ -1,6 +1,5 @@
 package com.leikooo.repo;
 
-import com.alipay.api.domain.Product;
 import com.leikooo.pojo.Products;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -2,7 +2,6 @@ package com.leikooo.pojo;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 
 /**
  * @author <a href="https://github.com/lieeew">leikooo</a>

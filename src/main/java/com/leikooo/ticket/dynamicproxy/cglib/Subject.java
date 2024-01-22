@@ -1,4 +1,4 @@
-package com.leikooo.dynamicproxy.cglib;
+package com.leikooo.ticket.dynamicproxy.cglib;
 
 /**
  * @author <a href="https://github.com/lieeew">leikooo</a>

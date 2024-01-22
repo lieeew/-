@@ -1,6 +1,5 @@
 package com.leikooo.ordermanagement.listener;
 
-import com.alipay.api.domain.UpdatedAuthenticationDetails;
 import com.leikooo.ordermanagement.command.OrderCommand;
 import com.leikooo.ordermanagement.command.invoke.OrderCommandInvoker;
 import com.leikooo.ordermanagement.state.OrderState;

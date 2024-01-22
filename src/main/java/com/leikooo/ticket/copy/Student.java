@@ -1,4 +1,4 @@
-package com.leikooo.copy;
+package com.leikooo.ticket.copy;
 
 import lombok.Builder;
 import lombok.Data;
