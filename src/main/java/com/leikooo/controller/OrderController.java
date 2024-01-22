@@ -29,7 +29,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/order")
 public class OrderController {
-
     @Value("${service.level}")
     private Integer serviceLevel;
 
