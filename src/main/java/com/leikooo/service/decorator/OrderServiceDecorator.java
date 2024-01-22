@@ -30,8 +30,6 @@ public class OrderServiceDecorator extends AbstractOrderServiceDecorator {
     private String delayTime;
 
     /**
-     *
-     *
      * @param productId
      * @param serviceLevel 0 正常服务；1 延迟服务； 2 暂停服务
      * @param price
@@ -52,14 +50,23 @@ public class OrderServiceDecorator extends AbstractOrderServiceDecorator {
                 MessageProperties messageProperties = new MessageProperties();
                 messageProperties.setExpiration(delayTime);
                 Message message = new Message(productId.getBytes(), messageProperties);
-                rabbitTemplate.send(AmqpConstants.NORMAL_EXCHANGE, AmqpConstants.NORMAL_ROUTING_KEY, message);
+                rabbitTemplate.convertAndSend(AmqpConstants.NORMAL_EXCHANGE, AmqpConstants.NORMAL_ROUTING_KEY, message);
+                rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
+                    if (!ack) {
+                        rabbitTemplate.convertAndSend(AmqpConstants.DEAD_EXCHANGE, AmqpConstants.DEAD_ROUTING_KEY, message);
+                        // 发送失败
+                        log.error(cause);
+                    }
+                    // 发送成功
+                    log.info("EXCHANGE: {}、ROUTING_KEY: {}、message: {}", AmqpConstants.NORMAL_EXCHANGE, AmqpConstants.NORMAL_ROUTING_KEY, message);
+                });
             }
             case 3 -> log.info("暂停服务");
             default -> throw new UnsupportedOperationException("不支持的服务");
         }
     }
 
-    public Order decoratorPay(String orderId, int serverLevel, float price){
+    public Order decoratorPay(String orderId, int serverLevel, float price) {
         Order order = super.payOrder(orderId);
         // 不会影响支付主流程
         try {

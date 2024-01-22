@@ -3,15 +3,15 @@ package com.leikooo.mq;
 import com.leikooo.constant.AmqpConstants;
 import com.leikooo.pojo.Products;
 import com.leikooo.repo.ProductRepository;
-import com.rabbitmq.client.Channel;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.ReceiveAndReplyCallback;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.retry.RecoveryCallback;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 /**
  * @author <a href="https://github.com/lieeew">leikooo</a>
@@ -24,24 +24,35 @@ public class MessageConsumer {
     @Resource
     private ProductRepository productRepository;
 
+    @Resource
+    private RabbitTemplate rabbitTemplate;
+
     @RabbitListener(queues = {AmqpConstants.DEAD_QUEUE}, ackMode = "MANUAL")
-    public void consumerMes(String message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
+    public void consumerMes(String message, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
         log.info("Received message: {}", message);
-
+        rabbitTemplate.receiveAndReply((ReceiveAndReplyCallback<String, String>) payload -> {
+            log.info("Received message: {}", payload);
+            return payload;
+        });
         try {
-            Products byProductId = productRepository.findByProductId(message);
-
-            if (byProductId != null && byProductId.getSendRedBag() == 1) {
-                log.info("Normal processing, sending red packet to the user!");
-                channel.basicAck(deliveryTag, false);
+            Products referenceById = productRepository.findByProductId(message);
+            if (referenceById != null && referenceById.getSendRedBag() == 1) {
+                //  nack 消息怎么办？
+                rabbitTemplate.execute(channel -> {
+                    channel.basicAck(deliveryTag, false);
+                    return "";
+                });
             } else {
-                log.info("Skipping processing, not sending red packet to the user.");
-                // Depending on your logic, you might want to use basicReject instead of basicNack
-                channel.basicNack(deliveryTag, false, false);
+                rabbitTemplate.execute(channel -> {
+                    channel.basicNack(deliveryTag, false, false);
+                    return "";
+                });
             }
-        } catch (IOException e) {
-            log.error("Error processing message: {}", e.getMessage());
-            // Handle the exception appropriately, e.g., log it, throw a custom exception, etc.
-        }
+        } catch (Exception e) {
+            rabbitTemplate.execute(channel -> {
+                channel.basicNack(deliveryTag, false, false);
+                return "";
+            });
+        };
     }
 }
