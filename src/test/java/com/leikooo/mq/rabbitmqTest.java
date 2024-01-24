@@ -8,6 +8,7 @@ import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,5 +47,11 @@ public class rabbitmqTest {
         amqpAdmin.declareExchange(normalExchange);
 
         amqpAdmin.declareBinding(BindingBuilder.bind(normalQueue).to(normalExchange).with(AmqpConstants.NORMAL_ROUTING_KEY));
-        }
+    }
+
+    @Test
+    void sendMessage() {
+        rabbitTemplate.convertAndSend(AmqpConstants.DEAD_EXCHANGE, AmqpConstants.DEAD_ROUTING_KEY, "测试");
+    }
+
 }

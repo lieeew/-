@@ -55,7 +55,7 @@ logging:
     com:
       info
 service:
-  level: 2
+  level: 1
 daley:
   service:
     time: 100
