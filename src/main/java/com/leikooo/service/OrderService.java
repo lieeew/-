@@ -1,5 +1,6 @@
 package com.leikooo.service;
 
+import com.google.common.collect.ImmutableMap;
 import com.leikooo.ordermanagement.command.OrderCommand;
 import com.leikooo.ordermanagement.command.invoke.OrderCommandInvoker;
 import com.leikooo.ordermanagement.state.OrderState;
@@ -8,6 +9,7 @@ import com.leikooo.pay.face.PayFace;
 import com.leikooo.pojo.Order;
 import com.leikooo.constant.StateMachineConstant;
 import com.leikooo.service.inner.OrderServiceInterface;
+import com.leikooo.transaction.colleague.AbstractCustomer;
 import com.leikooo.transaction.colleague.Buyer;
 import com.leikooo.transaction.colleague.Payer;
 import com.leikooo.transaction.mediator.Mediator;
@@ -20,6 +22,9 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.persist.StateMachinePersister;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href="https://github.com/lieeew">leikooo</a>
@@ -43,6 +48,9 @@ public class OrderService implements OrderServiceInterface {
 
     @Resource
     private PayFace payFace;
+
+    @Resource
+    private Mediator mediator;
 
     @Override
     public Order createOrder(final String productId) {
@@ -93,12 +101,9 @@ public class OrderService implements OrderServiceInterface {
 
     @Override
     public void friendlyPay(String sourceCustomer, String orderId, String targetCustomer, String payResult, String role) {
-        // 创建中介, 因为中介是一个有状态的类所以只能用 new 的方式
-        Mediator mediator = new Mediator();
         Payer payer = new Payer(mediator, orderId, sourceCustomer);
         Buyer buyer = new Buyer(mediator, orderId, targetCustomer);
-        mediator.setBuyer(buyer);
-        mediator.setPayer(payer);
+        Mediator.customerInstances.put(orderId, ImmutableMap.of("payer", payer, "buyer", buyer));
         if ("B".equals(role)) {
             buyer.messageTransfer(orderId, targetCustomer, payResult);
         } else if ("P".equals(role)) {

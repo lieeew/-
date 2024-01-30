@@ -99,4 +99,8 @@ public class OrderController {
         //进行相关的业务操作
         return "支付成功页面跳转, 当前订单为：" + outTradeNo;
     }
+    @PostMapping("/friendPay")
+    public void friendPay(String orderId, String sourceCustomer, String targetCustomer, String payResult, String role) {
+        orderService.friendlyPay(sourceCustomer, orderId, targetCustomer, payResult, role);
+    }
 }

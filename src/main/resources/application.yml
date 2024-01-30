@@ -59,3 +59,7 @@ service:
 daley:
   service:
     time: 100
+knife4j:
+  enable: true
+  openapi:
+    title: Knife4j 文档
