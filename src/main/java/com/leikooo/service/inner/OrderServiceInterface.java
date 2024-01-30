@@ -13,4 +13,5 @@ public interface OrderServiceInterface {
     Order sendOrder(String orderId);
     Order receiveOrder(String orderId);
     String getPayUrl(String orderId, Integer payType, Float price);
+    void friendlyPay(String sourceCustomer, String orderId, String targetCustomer, String payResult, String role);
 }

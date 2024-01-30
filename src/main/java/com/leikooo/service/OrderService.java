@@ -8,8 +8,12 @@ import com.leikooo.pay.face.PayFace;
 import com.leikooo.pojo.Order;
 import com.leikooo.constant.StateMachineConstant;
 import com.leikooo.service.inner.OrderServiceInterface;
+import com.leikooo.transaction.colleague.Buyer;
+import com.leikooo.transaction.colleague.Payer;
+import com.leikooo.transaction.mediator.Mediator;
 import com.leikooo.util.RedisCommonProcessor;
 import jakarta.annotation.Resource;
+import jakarta.persistence.Id;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
@@ -85,6 +89,21 @@ public class OrderService implements OrderServiceInterface {
         Order order = (Order) redisCommonProcessor.get(orderId);
         Order completeOrder = Order.builder().price(price).productId(order.getProductId()).orderState(order.getOrderState()).orderId(orderId).build();
         return payFace.pay(completeOrder, payType);
+    }
+
+    @Override
+    public void friendlyPay(String sourceCustomer, String orderId, String targetCustomer, String payResult, String role) {
+        // 创建中介, 因为中介是一个有状态的类所以只能用 new 的方式
+        Mediator mediator = new Mediator();
+        Payer payer = new Payer(mediator, orderId, sourceCustomer);
+        Buyer buyer = new Buyer(mediator, orderId, targetCustomer);
+        mediator.setBuyer(buyer);
+        mediator.setPayer(payer);
+        if ("B".equals(role)) {
+            buyer.messageTransfer(orderId, targetCustomer, payResult);
+        } else if ("P".equals(role)) {
+            payer.messageTransfer(orderId, sourceCustomer, payResult);
+        }
     }
 
     /**

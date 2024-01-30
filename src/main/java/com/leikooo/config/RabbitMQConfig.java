@@ -24,6 +24,7 @@ public class RabbitMQConfig {
     public RabbitMQConfig(CachingConnectionFactory cachingConnectionFactory) {
         this.cachingConnectionFactory = cachingConnectionFactory;
         this.cachingConnectionFactory.setPublisherReturns(true);
+        this.cachingConnectionFactory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED);
     }
 
     @Bean
@@ -33,7 +34,7 @@ public class RabbitMQConfig {
         factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         factory.setDefaultRequeueRejected(false);
         return factory;
-    }
+}
 
     @Bean
     public Queue createNormalQueue() {

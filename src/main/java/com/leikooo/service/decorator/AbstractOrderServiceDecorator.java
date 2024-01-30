@@ -6,9 +6,9 @@ import com.leikooo.service.inner.OrderServiceInterface;
 /**
  * @author <a href="https://github.com/lieeew">leikooo</a>
  * @data 2024/1/20
- * @description
+ * @description 装饰器模式
  */
-public abstract  class AbstractOrderServiceDecorator implements OrderServiceInterface {
+public abstract class AbstractOrderServiceDecorator implements OrderServiceInterface {
     private OrderServiceInterface orderServiceInterface;
 
     public void setOrderServiceInterface(OrderServiceInterface orderServiceInterface) {
@@ -38,6 +38,11 @@ public abstract  class AbstractOrderServiceDecorator implements OrderServiceInte
     @Override
     public String getPayUrl(String orderId, Integer payType, Float price) {
         return this.orderServiceInterface.getPayUrl(orderId, payType, price);
+    }
+
+    @Override
+    public void friendlyPay(String sourceCustomer, String orderId, String targetCustomer, String payResult, String role) {
+        this.orderServiceInterface.friendlyPay(sourceCustomer, orderId, targetCustomer, payResult, role);
     }
 
     /**

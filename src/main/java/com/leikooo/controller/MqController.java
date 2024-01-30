@@ -2,6 +2,7 @@ package com.leikooo.controller;
 
 import com.leikooo.constant.AmqpConstants;
 import jakarta.annotation.Resource;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,8 @@ public class MqController {
     private RabbitTemplate rabbitTemplate;
 
     @PostMapping("/send")
-    public void sendMess(@RequestParam String mes) {
-        rabbitTemplate.convertAndSend(AmqpConstants.DEAD_EXCHANGE, AmqpConstants.DEAD_ROUTING_KEY, mes);
+    public void sendMess(@RequestParam String mes, @RequestParam String uniqueId) {
+        CorrelationData correlationData = new CorrelationData(uniqueId);
+        rabbitTemplate.convertAndSend(AmqpConstants.DEAD_EXCHANGE, AmqpConstants.DEAD_ROUTING_KEY, mes, correlationData);
     }
 }
