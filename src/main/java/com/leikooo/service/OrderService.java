@@ -1,6 +1,7 @@
 package com.leikooo.service;
 
 import com.google.common.collect.ImmutableMap;
+import com.leikooo.audit.*;
 import com.leikooo.ordermanagement.command.OrderCommand;
 import com.leikooo.ordermanagement.command.invoke.OrderCommandInvoker;
 import com.leikooo.ordermanagement.state.OrderState;
@@ -52,6 +53,18 @@ public class OrderService implements OrderServiceInterface {
     @Resource
     private Mediator mediator;
 
+    @Resource
+    private CreatOrderLog creatOrderLog;
+
+    @Resource
+    private PayOrderLog payOrderLog;
+
+    @Resource
+    private ReceiveOrderLog receiveOrderLog;
+
+    @Resource
+    private SendOrderLog sendOrderLog;
+
     @Override
     public Order createOrder(final String productId) {
         String orderId = "OID" + productId;
@@ -59,6 +72,8 @@ public class OrderService implements OrderServiceInterface {
         redisCommonProcessor.set(orderId, order, 600);
         OrderCommandInvoker orderCommandInvoker = new OrderCommandInvoker();
         orderCommandInvoker.invoke(orderCommand, order);
+        // 发到一个 queue 里面
+        OrderAuditLog orderAuditLog = creatOrderLog.creatAuditLog("account", "creat", orderId);
         return order;
     }
 
@@ -69,6 +84,7 @@ public class OrderService implements OrderServiceInterface {
         if (!changeStateAction(message, order)) {
             return null;
         }
+        OrderAuditLog orderAuditLog = payOrderLog.creatAuditLog("account", "pay", orderId);
         return order;
     }
 
@@ -79,6 +95,7 @@ public class OrderService implements OrderServiceInterface {
         if (!changeStateAction(message, order)) {
             return null;
         }
+        OrderAuditLog orderAuditLog = sendOrderLog.creatAuditLog("account", "send", orderId);
         return order;
     }
 
@@ -89,6 +106,7 @@ public class OrderService implements OrderServiceInterface {
         if (!changeStateAction(message, order)) {
             return null;
         }
+        OrderAuditLog orderAuditLog = receiveOrderLog.creatAuditLog("account", "receive", orderId);
         return order;
     }
 
